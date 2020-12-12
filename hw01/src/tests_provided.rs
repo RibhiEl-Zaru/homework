@@ -63,7 +63,7 @@ fn test_mat_mult_identity() {
     }
 }
 
-/*
+
 //
 // Problem 3
 //
@@ -72,7 +72,7 @@ fn test_mat_mult_identity() {
 fn test_sieve_basic() {
     assert_eq!(vec![2,3,5,7,11], sieve(12));
 }
-
+/*
 //
 // Problem 4
 //
