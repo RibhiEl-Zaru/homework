@@ -17,7 +17,7 @@ fn test_sum_small() {
     assert_eq!(sum(&array), 15);
 }
 
-/*
+
 
 // Part 2
 
@@ -26,6 +26,7 @@ fn test_dedup_small() {
     let vs = vec![1,2,2,3,4,1];
     assert_eq!(dedup(&vs), vec![1,2,3,4]);
 }
+
 
 // Part 3
 
@@ -39,9 +40,12 @@ fn test_filter_small() {
     assert_eq!(filter(&vs, &even_predicate), vec![2,4]);
 }
 
+
 //
 // Problem 2
 //
+
+// TODO write tests in test mine for the constraints described in the readme.
 
 #[test]
 fn test_mat_mult_identity() {
@@ -53,11 +57,13 @@ fn test_mat_mult_identity() {
     let result = mat_mult(&mat1, &mat2);
     for i in 0..result.len() {
         for j in 0..result[i].len() {
+            println!("{}, {}", result[i][j], mat2[i][j]);
             assert_eq!(result[i][j], mat2[i][j]);
         }
     }
 }
 
+/*
 //
 // Problem 3
 //
