@@ -41,7 +41,7 @@ fn test_filter() {
 
 
 #[test]
-#[should_panic]
+#[should_panic]d
 fn test_mat_mult_panic() {
     let mut mat1 = vec![vec![0.;2]; 2];
     for i in 0..mat1.len() {
