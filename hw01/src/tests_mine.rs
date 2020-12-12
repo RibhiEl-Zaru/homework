@@ -84,6 +84,43 @@ fn test_sieve_basic() {
     assert_eq!(vec![2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113], sieve(120));
 }
 
+
+
+#[test]
+fn test_hanoi_2_disks() {
+    let result = hanoi(2, Peg::A, Peg::B, Peg::C);
+    assert_eq!(vec![(Peg::A, Peg::B), (Peg::A, Peg::C), (Peg::B, Peg::C)], result);
+    assert_eq!(3, result.len());
+}
+
+
+#[test]
+fn test_hanoi_3_disks() {
+    let result = hanoi(3, Peg::A, Peg::B, Peg::C);
+    assert_eq!(vec![(Peg::A, Peg::C), (Peg::A, Peg::B), (Peg::C, Peg::B), (Peg::A, Peg::C), (Peg::B, Peg::A), (Peg::B, Peg::C), (Peg::A, Peg::C)], result);
+    assert_eq!(7, result.len());
+}
+
+#[test]
+fn test_hanoi_4_disks() {
+    let result = hanoi(4, Peg::A, Peg::B, Peg::C);
+    assert_eq!(15, result.len());
+}
+
+#[test]
+fn test_hanoi_5_disks() {
+    let result = hanoi(5, Peg::A, Peg::B, Peg::C);
+    assert_eq!(31, result.len());
+}
+
+
+
+#[test]
+fn test_hanoi_6_disks() {
+    let result = hanoi(6, Peg::A, Peg::B, Peg::C);
+    assert_eq!(63, result.len());
+}
+
 fn isOdd(value: i32) -> bool {
     value % 2 != 0
 }
