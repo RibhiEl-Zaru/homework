@@ -1,5 +1,3 @@
-use std::mem;
-
 #[derive(Debug)]
 pub struct BST {
     head: Link
@@ -89,7 +87,7 @@ mod test {
     use super::BST;
 
     #[test]
-    fn test_BST() {
+    fn test_bst() {
         // ...
         let mut bst = BST::new();
         assert!(bst.insert(15));
