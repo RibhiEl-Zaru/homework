@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 
-use rpn::{self, Stack};
+use crate::rpn::{self, Stack};
 
 /// Start a read-eval-print loop, which runs until an error or `quit`.
 pub fn read_eval_print_loop() -> rpn::Result<()> {
@@ -10,26 +10,65 @@ pub fn read_eval_print_loop() -> rpn::Result<()> {
     loop {
         // Print a user input prompt.
         print!("> ");
-        try!(io::stdout().flush().map_err(rpn::Error::IO));
+        io::stdout().flush().map_err(rpn::Error::IO)?;
 
         // TODO: Read from stdin into a String, and evaluate_line the result.
         // * An io::Error should be converted into a rpn::Error::IO
-        unimplemented!();
+        
+        let mut buf = String::new();
+        match io::stdin()
+            .read_line(&mut buf)
+            .map_err(rpn::Error::IO)
+            .and(evaluate_line(&mut stack, &buf))
+        {
+            Err(err) => return rpn::Result::Err(err),
+            _ => (),
+        };
     }
 }
 
+fn parse_operation(val: &str) -> Result<rpn::Op, rpn::Error> {
+    match val {
+        "+" => Result::Ok(rpn::Op::Add),
+        "~" => Result::Ok(rpn::Op::Neg),
+        "<->" => Result::Ok(rpn::Op::Swap),
+        "=" => Result::Ok(rpn::Op::Eq),
+        "#" => Result::Ok(rpn::Op::Rand),
+        "quit" => Result::Ok(rpn::Op::Quit),
+        _ => Result::Err(rpn::Error::Syntax),
+    }
+}
+
+fn parse_val(val: &str) -> Result<rpn::Elt, rpn::Error> {
+    val.parse::<i32>()
+        .map(|v| rpn::Elt::Int(v))
+        .or(val.parse::<bool>().map(|v| rpn::Elt::Bool(v)))
+        .or(Err(rpn::Error::Syntax))
+}
+
+
+#[allow(unused_must_use)]
 fn evaluate_line(stack: &mut Stack, buf: &String) -> rpn::Result<()> {
     // Create an iterator over the tokens.
-    let tokens = buf.trim().split_whitespace();
-
-    // TODO: Evaluate all of the tokens on the line.
-    unimplemented!()
+    let mut tokens = buf.trim().split_whitespace();
+    match tokens.next() {
+        Some(token) => {
+            if let Result::Ok(op) = parse_operation(token) {
+                return stack.eval(op);
+            } else if let Result::Ok(val) = parse_val(token) {
+                return stack.push(val);
+            } else {
+                return rpn::Result::Err(rpn::Error::Syntax);
+            }
+        }
+        None => return rpn::Result::Err(rpn::Error::Syntax),
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use rpn::{Stack, Error, Elt};
-    use parser::evaluate_line;
+    use crate::rpn::{Stack, Error, Elt};
+    use crate::parser::evaluate_line;
 
     #[test]
     fn test_evaluate_line_bool() {

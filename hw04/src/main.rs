@@ -1,4 +1,5 @@
 pub mod parser;
+extern crate rand;
 pub mod rpn;
 
 use parser::read_eval_print_loop;

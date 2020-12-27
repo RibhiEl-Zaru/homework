@@ -1,5 +1,5 @@
-use std::result;
 use std::io;
+use rand::Rng;
 
 #[derive(Eq, PartialEq, Ord, PartialOrd, Debug)]
 /// An element of the stack. May be either integer or boolean.
@@ -40,29 +40,127 @@ pub enum Op {
     Quit,
 }
 
-// TODO: Stack.
 
-// TODO: Result.
+pub struct Stack {
+    elements: Vec<Elt>,
+    ops: Vec<Op>
+}
+
+// Define a generic alias for a `Result` with the return type Elt and error type our custom Error`.
+pub type Result<Elt> = std::result::Result<Elt, Error>;
+
 
 impl Stack {
     /// Creates a new Stack
     pub fn new() -> Stack {
-        unimplemented!()
+        return Stack{ elements: vec![], ops: vec![] };
     }
 
     /// Pushes a value onto the stack.
     pub fn push(&mut self, val: Elt) -> Result<()> {
-        unimplemented!()
+        return Ok(self.elements.push(val));
     }
 
     /// Tries to pop a value off of the stack.
     pub fn pop(&mut self) -> Result<Elt> {
-        unimplemented!()
+        match self.elements.pop() {
+            Some(elt) => {
+                return Ok(elt);
+            }
+            None => {
+                return Err(Error::Underflow);
+            }
+        }
     }
 
     /// Tries to evaluate an operator using values on the stack.
+    #[warn(unused_doc_comments)]
     pub fn eval(&mut self, op: Op) -> Result<()> {
-        unimplemented!()
+        match op {
+            // Adds two numbers: pop x, pop y, push x + y.
+            Op::Add => {
+                match self.pop() {
+                    Ok(Elt::Int(el1)) => {
+                        match self.pop() {
+                            Ok(Elt::Int(el2)) => {
+                                return self.push(Elt::Int(el1 + el2));
+                            }
+                            Ok(Elt::Bool(_))  => { return Err(Error::Type); }
+                            Err(error) => {return Err(error);}
+                        }
+                        
+                    }
+                    Ok(Elt::Bool(_)) => {
+                        return Err(Error::Type);
+                    }
+                    Err(error) => {
+                        return Err(error);
+                    }
+                }
+            }
+            // Checks equality of two values: pop x, pop y, push x == y.
+            Op::Eq => {
+                match self.pop() {
+                    Ok(el1) => {
+                        match self.pop() {
+                            Ok(el2) => {
+                                return self.push(Elt::Bool(el1 == el2));
+                            }
+                            Err(error) => { return Err(error); }
+                        }
+                        
+                    }
+                    Err(error) => {
+                        return Err(error);
+                    }
+                }
+            }
+            // Negates a value: pop x, push ~x.
+            Op::Neg => {
+                match self.pop() {
+                    Ok(Elt::Int(el1)) => { return self.push(Elt::Int(- el1)) }
+                    Ok(Elt::Bool(bool_res)) => { return self.push(Elt::Bool(!bool_res)) }
+                    Err(error) => { return Err(error) }
+                }
+            }
+            // Swaps two values: pop x, pop y, push x, push y.
+            Op::Swap => {
+                match self.pop() {
+                    Ok(x) => {
+                        match self.pop() {
+                            Ok(y) => { 
+                                match self.push(x) {
+                                    Ok(_) => {
+                                        return self.push(y);
+                                    }
+                                    Err(err) => { return Err(err); }
+                                }
+                            }
+                            Err(err) => { return Err(err) }
+                        }
+
+                    }
+                    Err(error) => { return Err(error) }
+                }
+            }
+            // Computes a random number: pop x, push random number in [0, x).
+            Op::Rand => {
+                
+                match self.pop() {
+                    Ok(Elt::Int(el1)) => {
+                
+                        return self.push(Elt::Int(rand::thread_rng().gen_range(0..el1)));
+                    }
+                    Ok(Elt::Bool(_)) => { return Err(Error::Type)}
+                    Err(error) => { return Err(error) }
+                }
+            }
+
+            // Quit the Calculator
+            Op::Quit => {
+                return Err(Error::Quit);
+            }
+        }
     }
 }
 
